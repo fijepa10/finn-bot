@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finn Bot</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-256.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Finn Bot">
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <span class="logo">&gt; finn_bot</span>
+        <button id="new-chat-btn" class="header-btn" title="New chat">+ new</button>
+      </div>
+      <div id="chat-list" class="chat-list"></div>
+      <div class="sidebar-footer">
+        <button id="settings-btn" class="header-btn sidebar-btn">config</button>
+      </div>
+    </div>
+
+    <!-- Main Chat -->
+    <div class="chat-screen">
+      <header class="chat-header">
+        <div class="header-left">
+          <button id="sidebar-toggle" class="header-btn sidebar-toggle">chats</button>
+          <span id="chat-title" class="chat-title">new chat</span>
+          <span class="status">connected</span>
+        </div>
+        <div class="header-right">
+          <button id="clear-btn" class="header-btn" title="Clear chat">clear</button>
+          <button id="delete-chat-btn" class="header-btn delete-btn" title="Delete chat">delete</button>
+        </div>
+      </header>
+
+      <!-- Reply preview bar -->
+      <div id="reply-bar" class="reply-bar" style="display:none;">
+        <span class="reply-bar-text">replying to: <span id="reply-preview"></span></span>
+        <button id="reply-cancel" class="reply-cancel">&times;</button>
+      </div>
+
+      <div id="chat-messages" class="chat-messages">
+        <div class="message bot-message">
+          <span class="msg-prefix">[finn]</span>
+          <span class="message-text">hey, how can i help?</span>
+        </div>
+      </div>
+
+      <!-- Image preview bar -->
+      <div id="image-bar" class="image-bar" style="display:none;">
+        <img id="image-preview-thumb" class="image-preview-thumb" src="" alt="">
+        <span class="image-bar-text">image attached</span>
+        <button id="image-cancel" class="reply-cancel">&times;</button>
+      </div>
+
+      <div class="chat-input-area">
+        <form id="chat-form" class="chat-form">
+          <span class="input-prefix">&gt;</span>
+          <input type="file" id="image-input" accept="image/*" style="display:none;">
+          <button type="button" id="image-btn" class="image-btn" title="Attach image">img</button>
+          <button type="button" id="call-btn" class="call-btn" title="Voice call">call</button>
+          <textarea id="chat-input" placeholder="type something..." rows="1" autocomplete="off"></textarea>
+          <button type="submit" id="send-btn" class="send-btn">send</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Call Overlay -->
+    <div id="call-overlay" class="call-overlay" style="display:none;">
+      <div class="call-screen">
+        <div class="call-avatar">F</div>
+        <div class="call-name">Finn Bot</div>
+        <div id="call-status" class="call-status">connecting...</div>
+        <div id="call-transcript" class="call-transcript"></div>
+        <div class="call-controls">
+          <button id="call-mute" class="call-mute-btn">mute</button>
+          <button id="call-end" class="call-end-btn">end call</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settings-overlay" class="settings-overlay" style="display:none;">
+      <div class="settings-panel">
+        <div class="settings-header">
+          <span>&gt; config</span>
+          <button id="settings-close" class="header-btn">close</button>
+        </div>
+        <div class="settings-body">
+          <label>ui color</label>
+          <p class="settings-hint">Pick a color theme.</p>
+          <div class="color-picker">
+            <button class="color-btn active" data-color="green" style="background:#00ff41;"></button>
+            <button class="color-btn" data-color="red" style="background:#ff3333;"></button>
+            <button class="color-btn" data-color="blue" style="background:#3399ff;"></button>
+            <button class="color-btn" data-color="purple" style="background:#b366ff;"></button>
+            <button class="color-btn" data-color="orange" style="background:#ff9933;"></button>
+            <button class="color-btn" data-color="pink" style="background:#ff66b2;"></button>
+            <button class="color-btn" data-color="cyan" style="background:#00ffff;"></button>
+            <button class="color-btn" data-color="yellow" style="background:#ffff33;"></button>
+            <button class="color-btn" data-color="white" style="background:#e0e0e0;"></button>
+          </div>
+
+          <label>voice</label>
+          <p class="settings-hint">Select a voice for calls.</p>
+          <select id="voice-select" class="voice-select">
+            <option value="pNInz6obpgDQGcFmaJgB">Adam — Dominant, Firm (male)</option>
+            <option value="nPczCjzI2devNBz1zQrb">Brian — Deep, Resonant (male)</option>
+            <option value="CwhRBWXzGAHq8TQ4Fs17">Roger — Laid-Back, Casual (male)</option>
+            <option value="IKne3meq5aSn9XLyUdCD">Charlie — Deep, Confident (male, aussie)</option>
+            <option value="JBFqnCBsd6RMkjVDRZzb">George — Warm Storyteller (male, british)</option>
+            <option value="N2lVS1w4EtoT3dr4eOWO">Callum — Husky Trickster (male)</option>
+            <option value="TX3LPaxmHKxFdv7VOQHJ">Liam — Energetic Creator (male)</option>
+            <option value="iP95p4xoKVk53GoZ742B">Chris — Charming, Down-to-Earth (male)</option>
+            <option value="cjVigY5qzO86Huf0OWal">Eric — Smooth, Trustworthy (male)</option>
+            <option value="bIHbv24MWmeRgasZH58o">Will — Relaxed Optimist (male)</option>
+            <option value="onwK4e9ZLuTAKqWW03F9">Daniel — Steady Broadcaster (male, british)</option>
+            <option value="pqHfZKP75CvOlQylNhV4">Bill — Wise, Mature (male)</option>
+            <option value="SOYHLrjzK2X1ezoPC6cr">Harry — Fierce Warrior (male)</option>
+            <option value="EXAVITQu4vr4xnSDxMaL">Sarah — Mature, Confident (female)</option>
+            <option value="FGY2WhTYpPnrIDTdsKH5">Laura — Enthusiastic, Quirky (female)</option>
+            <option value="cgSgspJ2msm6clMCkdW9">Jessica — Playful, Bright (female)</option>
+            <option value="XrExE9yKIg1WjnnlVkGX">Matilda — Professional (female)</option>
+            <option value="Xb7hH8MSUJpSbSDYk0k2">Alice — Clear Educator (female, british)</option>
+            <option value="pFZP5JQG7iQjIQuC4Bku">Lily — Velvety Actress (female, british)</option>
+            <option value="hpp4J3VqNfWAUOO0d1Us">Bella — Professional, Warm (female)</option>
+            <option value="SAz9YHcvj6GT2YYXdXww">River — Relaxed, Neutral (neutral)</option>
+          </select>
+          <button id="preview-voice" class="save-btn" style="margin-top:8px;">preview</button>
+
+          <label for="personality-input" style="margin-top:16px;">personality</label>
+          <p class="settings-hint">Define Finn's entire personality. This is the system prompt — full control.</p>
+          <textarea id="personality-input" class="personality-input" rows="8" placeholder="e.g. You are Finn, an unhinged friend who swears a lot, loves indie music, talks in abbreviations like u, ur, ngl, tbh. Keep responses short like text messages."></textarea>
+          <button id="save-personality" class="save-btn">save</button>
+          <p id="save-status" class="save-status"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    }
+  </script>
+</body>
+</html>
