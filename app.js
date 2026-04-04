@@ -324,7 +324,7 @@ function createMessageEl(msg, index) {
     ${replyHtml}
     <div class="message-row">
       <span class="msg-prefix">${isBot ? "[finn]" : "[you]"}</span>
-      <span class="message-text">${thinkingHtml}${msg.image ? `<img class="message-image" src="${msg.image}" alt="uploaded image">` : ""}${isBot ? renderMarkdown(msg.text) : escapeHtml(msg.text)}</span>
+      <span class="message-text">${thinkingHtml}${msg.image ? `<img class="message-image" src="${msg.image}" alt="uploaded image">` : ""}${msg.generatedImage ? `<img class="message-image generated-image" src="${msg.generatedImage}" alt="generated image">` : ""}${isBot ? renderMarkdown(msg.text) : escapeHtml(msg.text)}</span>
       <span class="message-actions"><button class="reply-btn" data-reply-index="${index}">reply</button></span>
     </div>
   `;
@@ -389,6 +389,32 @@ async function handleSend(e) {
   chatInput.value = "";
   chatInput.style.height = "auto";
   sendBtn.disabled = true;
+
+  // Check for image generation command
+  const genMatch = text.match(/^\/(gen|image|draw|create)\s+(.+)/i);
+  if (genMatch) {
+    const prompt = genMatch[2].trim();
+    const thinkingEl = showThinkingIndicator();
+    try {
+      thinkingEl.querySelector(".thinking-status").textContent = "generating image...";
+      const imgUrl = await generateImage(prompt);
+      thinkingEl.remove();
+      const botMsg = { sender: "bot", text: `here's what i got for "${prompt}":`, generatedImage: imgUrl, replyTo: null };
+      chat.messages.push(botMsg);
+      chat.history.push({ role: "assistant", content: `[generated image: ${prompt}]` });
+      saveChats();
+      renderMessages();
+    } catch (err) {
+      thinkingEl.remove();
+      const botMsg = { sender: "bot", text: `couldn't generate that: ${err.message}`, replyTo: null };
+      chat.messages.push(botMsg);
+      saveChats();
+      renderMessages();
+    }
+    sendBtn.disabled = false;
+    chatInput.focus();
+    return;
+  }
 
   const thinkingEl = showThinkingIndicator();
 
@@ -574,6 +600,17 @@ function showThinkingIndicator() {
   chatMessages.appendChild(msg);
   chatMessages.scrollTop = chatMessages.scrollHeight;
   return msg;
+}
+
+// ── Image Generation (Pollinations.ai — free, no key) ──
+async function generateImage(prompt) {
+  const encoded = encodeURIComponent(prompt);
+  const url = `https://image.pollinations.ai/prompt/${encoded}?width=512&height=512&nologo=true&seed=${Date.now()}`;
+  // Pre-fetch to trigger generation, then return the URL
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Image generation failed");
+  const blob = await res.blob();
+  return URL.createObjectURL(blob);
 }
 
 function escapeHtml(text) {

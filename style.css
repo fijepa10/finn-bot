@@ -720,6 +720,16 @@ em {
   display: block;
 }
 
+.generated-image {
+  max-width: 320px;
+  max-height: 320px;
+  cursor: pointer;
+}
+
+.generated-image:hover {
+  border-color: var(--green);
+}
+
 /* ── Settings ── */
 .settings-overlay {
   position: fixed;
